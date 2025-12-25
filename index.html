@@ -58,6 +58,7 @@
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
     }
     @media (min-width: 769px){
       body{ background-attachment: fixed; }
@@ -408,8 +409,9 @@
       box-shadow: 0 1px 3px rgba(0,0,0,.05);
       position: relative;
       width: 100%;
+      max-width: 100%;
       height: auto;
-      overflow: visible;
+      overflow: hidden;
       will-change: transform;
     }
     @media (min-width: 769px){
@@ -474,7 +476,10 @@
       font-weight: 600;
       line-height: 1.5;
       word-break: break-word;
+      overflow-wrap: anywhere;
       color: #334155;
+      max-width: 100%;
+      overflow: hidden;
     }
 
     /* Card Header - responsive flex layout */
@@ -521,8 +526,10 @@
       line-height: 1.7;
       color: #334155;
       word-wrap: break-word;
-      overflow-wrap: break-word;
+      overflow-wrap: anywhere;
       hyphens: auto;
+      max-width: 100%;
+      overflow: hidden;
     }
     .card-content strong{
       color: var(--primary);
