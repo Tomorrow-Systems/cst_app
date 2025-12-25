@@ -79,6 +79,145 @@
       margin-top: 4px;
     }
 
+    /* Action Bar */
+    .action-bar{
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 0;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+    .action-group{
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .action-label{
+      font-size: .75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--muted);
+    }
+    .action-buttons{
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .action-buttons .form-control{
+      max-width: 180px;
+      border-radius: 8px;
+      border: 2px solid var(--border);
+      font-size: .85rem;
+    }
+    .action-buttons .form-control:focus{
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79,70,229,.1);
+    }
+    @media (max-width: 768px){
+      .action-bar .d-flex{
+        flex-direction: column;
+        align-items: stretch !important;
+      }
+      .action-group{
+        width: 100%;
+      }
+      .action-buttons{
+        flex-wrap: wrap;
+      }
+      .action-buttons .form-control{
+        max-width: 100%;
+        flex: 1;
+      }
+    }
+
+    /* Help Modal */
+    .help-section{
+      margin-bottom: 24px;
+    }
+    .help-section:last-child{
+      margin-bottom: 0;
+    }
+    .help-section h6{
+      color: var(--primary);
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .help-section h6 i{
+      font-size: 1.1rem;
+    }
+    .help-section p{
+      color: #475569;
+      margin-bottom: 8px;
+      line-height: 1.6;
+    }
+    .help-section ul{
+      margin: 0;
+      padding-left: 20px;
+      color: #475569;
+    }
+    .help-section li{
+      margin-bottom: 6px;
+      line-height: 1.5;
+    }
+    .help-step{
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      padding: 12px;
+      background: #f8fafc;
+      border-radius: 10px;
+      border-left: 3px solid var(--primary);
+    }
+    .help-step-num{
+      width: 28px;
+      height: 28px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: .85rem;
+      flex-shrink: 0;
+    }
+    .help-step-content{
+      flex: 1;
+    }
+    .help-step-content strong{
+      display: block;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .help-step-content span{
+      color: #64748b;
+      font-size: .9rem;
+    }
+    .help-tip{
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border: 1px solid #f59e0b;
+      border-radius: 10px;
+      padding: 12px 16px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .help-tip i{
+      color: #d97706;
+      font-size: 1.1rem;
+      margin-top: 2px;
+    }
+    .help-tip p{
+      margin: 0;
+      color: #92400e;
+      font-size: .9rem;
+    }
+
     .app-shell{
       max-width: 1400px;
       margin: 0 auto;
@@ -681,12 +820,36 @@
           <h4><i class="bi bi-clipboard2-data me-2"></i>Tableau de suivi — Engagements & KPI</h4>
           <div class="subtitle">Clique sur un engagement pour voir et renseigner ses KPI (sauvegarde auto)</div>
         </div>
-        <div class="upload-compact">
-          <input id="fileInput" class="form-control form-control-sm" type="file" accept=".json,application/json" style="background: rgba(255,255,255,.9);">
-          <button id="btnLoadCST" class="btn btn-sm btn-light"><i class="bi bi-cloud-download me-1"></i>Charger données CST</button>
-          <div class="vr mx-1 d-none d-md-block" style="height: 24px; opacity: 0.3;"></div>
-          <input id="excelImportInput" class="form-control form-control-sm" type="file" accept=".xlsx,.xls" style="background: rgba(255,255,255,.9); max-width: 200px;" title="Importer les sélections depuis Excel">
-          <button id="btnImportExcel" class="btn btn-sm btn-warning"><i class="bi bi-upload me-1"></i>Importer Excel</button>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <!-- Help Button -->
+          <button id="btnHelp" class="btn btn-sm btn-outline-light" data-bs-toggle="modal" data-bs-target="#helpModal">
+            <i class="bi bi-question-circle me-1"></i>Aide
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Bar -->
+  <div class="action-bar">
+    <div class="container-fluid" style="max-width: 1400px; margin: 0 auto; padding: 0 20px;">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <!-- Data Loading Section -->
+        <div class="action-group">
+          <span class="action-label"><i class="bi bi-database me-1"></i>Charger les données</span>
+          <div class="action-buttons">
+            <input id="fileInput" class="form-control form-control-sm" type="file" accept=".json,application/json" title="Charger un fichier JSON">
+            <button id="btnLoadCST" class="btn btn-sm btn-primary"><i class="bi bi-cloud-download me-1"></i>Données CST</button>
+          </div>
+        </div>
+
+        <!-- Excel Import Section -->
+        <div class="action-group">
+          <span class="action-label"><i class="bi bi-file-earmark-excel me-1"></i>Importer sélections</span>
+          <div class="action-buttons">
+            <input id="excelImportInput" class="form-control form-control-sm" type="file" accept=".xlsx,.xls" title="Importer depuis Excel">
+            <button id="btnImportExcel" class="btn btn-sm btn-warning"><i class="bi bi-upload me-1"></i>Importer</button>
+          </div>
         </div>
       </div>
     </div>
@@ -776,6 +939,115 @@
     </div>
     <div class="offcanvas-body">
       <div id="kpiBody"></div>
+    </div>
+  </div>
+
+  <!-- Help Modal -->
+  <div class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: #fff;">
+          <h5 class="modal-title" id="helpModalLabel" style="font-weight: 800;">
+            <i class="bi bi-question-circle me-2"></i>Guide d'utilisation
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+        <div class="modal-body" style="padding: 24px;">
+
+          <!-- Section 1: Getting Started -->
+          <div class="help-section">
+            <h6><i class="bi bi-play-circle"></i>Pour commencer</h6>
+            <div class="help-step">
+              <div class="help-step-num">1</div>
+              <div class="help-step-content">
+                <strong>Charger les donnees</strong>
+                <span>Cliquez sur "Donnees CST" pour charger automatiquement les engagements, ou selectionnez un fichier JSON personnalise.</span>
+              </div>
+            </div>
+            <div class="help-step">
+              <div class="help-step-num">2</div>
+              <div class="help-step-content">
+                <strong>Parcourir les engagements</strong>
+                <span>Les engagements s'affichent sous forme de cartes. Utilisez les filtres pour trouver rapidement ce que vous cherchez.</span>
+              </div>
+            </div>
+            <div class="help-step">
+              <div class="help-step-num">3</div>
+              <div class="help-step-content">
+                <strong>Evaluer les KPI</strong>
+                <span>Cliquez sur une carte pour ouvrir le panneau des KPI et renseigner vos evaluations.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: Evaluating KPIs -->
+          <div class="help-section">
+            <h6><i class="bi bi-speedometer2"></i>Evaluer les KPI</h6>
+            <p>Pour chaque KPI, vous pouvez selectionner :</p>
+            <ul>
+              <li><strong>Confiance :</strong> Oui / Non / Probablement - Indique si l'objectif sera atteint</li>
+              <li><strong>Importance :</strong> Haute / Moyenne / Faible - Priorite de ce KPI</li>
+            </ul>
+            <p>Vos selections sont <strong>sauvegardees automatiquement</strong> dans votre navigateur.</p>
+          </div>
+
+          <!-- Section 3: Status Colors -->
+          <div class="help-section">
+            <h6><i class="bi bi-palette"></i>Comprendre les couleurs</h6>
+            <ul>
+              <li><span style="display:inline-block; width:12px; height:12px; background:#94a3b8; border-radius:50%; margin-right:8px;"></span><strong>Gris :</strong> Pas initie - Aucun KPI evalue</li>
+              <li><span style="display:inline-block; width:12px; height:12px; background:#3b82f6; border-radius:50%; margin-right:8px;"></span><strong>Bleu :</strong> Partiellement complete - Au moins un KPI evalue</li>
+              <li><span style="display:inline-block; width:12px; height:12px; background:#10b981; border-radius:50%; margin-right:8px;"></span><strong>Vert :</strong> Complete - Tous les KPI evalues</li>
+            </ul>
+          </div>
+
+          <!-- Section 4: Export/Import -->
+          <div class="help-section">
+            <h6><i class="bi bi-arrow-left-right"></i>Exporter et Importer</h6>
+            <p><strong>Exporter vers Excel :</strong></p>
+            <ul>
+              <li>Cliquez sur le bouton vert "Exporter Excel" en bas de page</li>
+              <li>Un fichier .xlsx sera telecharge avec toutes vos selections</li>
+            </ul>
+            <p><strong>Importer depuis Excel :</strong></p>
+            <ul>
+              <li>Utilisez la section "Importer selections" dans la barre d'action</li>
+              <li>Selectionnez un fichier Excel precedemment exporte</li>
+              <li>Vos selections seront restaurees automatiquement</li>
+            </ul>
+            <div class="help-tip">
+              <i class="bi bi-lightbulb"></i>
+              <p><strong>Astuce :</strong> Vous pouvez modifier le fichier Excel (colonnes selection_confiance et selection_importance) puis le reimporter pour mettre a jour vos evaluations en masse.</p>
+            </div>
+          </div>
+
+          <!-- Section 5: Filters -->
+          <div class="help-section">
+            <h6><i class="bi bi-funnel"></i>Utiliser les filtres</h6>
+            <ul>
+              <li><strong>Recherche :</strong> Tapez un mot-cle pour filtrer tous les champs</li>
+              <li><strong>Domaine :</strong> Filtrez par categorie d'engagement</li>
+              <li><strong>KPI :</strong> Affichez uniquement les engagements contenant un KPI specifique</li>
+              <li><strong>Etat :</strong> Filtrez par niveau de completion</li>
+            </ul>
+          </div>
+
+          <!-- Section 6: Data Persistence -->
+          <div class="help-section">
+            <h6><i class="bi bi-hdd"></i>Sauvegarde des donnees</h6>
+            <div class="help-tip">
+              <i class="bi bi-exclamation-triangle"></i>
+              <p><strong>Important :</strong> Vos donnees sont stockees localement dans votre navigateur (localStorage). Si vous effacez les donnees de navigation, vos selections seront perdues. Pensez a exporter regulierement vers Excel pour conserver une sauvegarde.</p>
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+            <i class="bi bi-check-lg me-1"></i>J'ai compris
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
