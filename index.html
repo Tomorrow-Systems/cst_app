@@ -292,30 +292,62 @@
     .state-partial .mini-state{ background: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,.3); }
     .state-done .mini-state{ background: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,.3); }
 
-    .engagement-text{ font-weight: 600; line-height: 1.5; word-break: break-word; color: #334155; }
+    .engagement-text{
+      font-weight: 600;
+      line-height: 1.5;
+      word-break: break-word;
+      color: #334155;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
 
     .card-grid{
-      display: grid;
-      grid-template-columns: 140px 1fr 1.2fr;
-      gap: 20px;
-    }
-    @media (max-width: 992px){
-      .card-grid{ grid-template-columns: 1fr; }
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
     .card-grid > div{ min-width: 0; }
 
+    .card-section{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .card-section .section-title{
+      font-size: .75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--muted);
+      width: 100%;
+      margin-bottom: 2px;
+    }
+
     .detail-list{
-      margin: 8px 0 0;
-      padding-left: 20px;
+      margin: 4px 0 0;
+      padding-left: 18px;
       color: #475569;
+      font-size: .9rem;
     }
     .detail-list li{
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       word-break: break-word;
-      position: relative;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
     .detail-list li::marker{
       color: var(--primary);
+    }
+
+    .row-card .engagement-preview{
+      font-size: .9rem;
+      line-height: 1.4;
     }
 
     .offcanvas{
@@ -964,44 +996,28 @@
       for(const { item, idx, state } of rows){
         const ref = item["Référence contractuelle"] ?? "";
         const engagement = item["Engagement"] ?? "";
-        const details = safeArray(item["Points détaillés de l'engagement"]);
+        const domaine = item["Domaine"] ?? "";
+        const kpiCount = safeArray(item["Indicateurs & KPI"]).length;
 
         const tr = document.createElement("tr");
         tr.style.display = "block";
         tr.innerHTML = `
           <td style="display:block;">
             <div class="row-card state-${state}" data-idx="${idx}">
-              <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap">
-                <div class="d-flex align-items-center gap-2">
+              <div class="d-flex align-items-start justify-content-between gap-2 flex-wrap mb-2">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
                   <span class="ref-badge">
                     <span class="mini-state"></span>
                     ${escapeHtml(ref)}
                   </span>
+                  ${domaine ? `<span class="badge bg-light text-dark" style="font-weight:500; font-size:.75rem;">${escapeHtml(domaine)}</span>` : ''}
+                </div>
+                <div class="d-flex align-items-center gap-2">
                   <span class="subtle">${stateLabelFr(state)}</span>
-                </div>
-                <span class="subtle">${safeArray(item["Indicateurs & KPI"]).length} KPI</span>
-              </div>
-
-              <div class="mt-2 card-grid">
-                <div>
-                  <div class="subtle">Référence</div>
-                  <div class="fw-bold">${escapeHtml(ref)}</div>
-                </div>
-
-                <div>
-                  <div class="subtle">Engagement</div>
-                  <div class="engagement-text">${escapeHtml(engagement)}</div>
-                </div>
-
-                <div>
-                  <div class="subtle">Détail de l'engagement</div>
-                  ${
-                    details.length
-                      ? `<ul class="detail-list">${details.map(d => `<li>${escapeHtml(d)}</li>`).join("")}</ul>`
-                      : `<div class="subtle">—</div>`
-                  }
+                  <span class="badge bg-primary" style="font-size:.75rem;">${kpiCount} KPI</span>
                 </div>
               </div>
+              <div class="engagement-text">${escapeHtml(engagement)}</div>
             </div>
           </td>
         `;
