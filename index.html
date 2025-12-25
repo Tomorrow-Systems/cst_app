@@ -280,6 +280,7 @@
 
         <div class="upload-compact">
           <input id="fileInput" class="form-control form-control-sm" type="file" accept=".json,application/json">
+          <button id="btnLoadCST" class="btn btn-sm btn-primary">Charger données CST</button>
           <button id="btnExportExcelSelections" class="btn btn-sm btn-success">Exporter Excel (sélections)</button>
         </div>
       </div>
@@ -377,7 +378,7 @@
 
     const els = {
       fileInput: document.getElementById("fileInput"),
-      btnLoadDemo: document.getElementById("btnLoadDemo"),
+      btnLoadCST: document.getElementById("btnLoadCST"),
       btnExportExcelSelections: document.getElementById("btnExportExcelSelections"),
       emptyState: document.getElementById("emptyState"),
       tableArea: document.getElementById("tableArea"),
@@ -884,41 +885,36 @@
     els.domainFilter.addEventListener("change", renderTable); // ✅ NEW
     els.kpiFilter.addEventListener("change", renderTable);    // ✅ NEW
 
-    els.btnLoadDemo.addEventListener("click", () => {
-      data = [
-        {
-          "Domaine":"Foncier et autorisations",
-          "Référence contractuelle":"4.1",
-          "Engagement":"Le Délégant mobilisera le foncier nécessaire…",
-          "Points détaillés de l'engagement":[
-            "Mobiliser le foncier nécessaire.",
-            "Inclure Centres de Maintenance.",
-            "Inclure Centres de Remisage."
-          ],
-          "Indicateurs & KPI":[
-            {"Nom_KPI":"Existence foncier Maintenance","Définition":"Indique si terrains mobilisés.","Unité":"oui/non"},
-            {"Nom_KPI":"Existence foncier Remisage","Définition":"Indique si terrains mobilisés.","Unité":"oui/non"}
-          ]
-        },
-        {
-          "Domaine":"Organisation interne",
-          "Référence contractuelle":"5.1.1",
-          "Engagement":"Le Délégataire met en place une organisation…",
-          "Points détaillés de l'engagement":[
-            "Développer compétences stratégiques.",
-            "Internaliser activités récurrentes."
-          ],
-          "Indicateurs & KPI":[
-            {"Nom_KPI":"Taux d'internalisation","Définition":"Part des activités internalisées.","Unité":"%"}
-          ]
-        }
-      ];
-      ensureKpiIds();
-      actions = loadActions();
-      saveActions();
+    els.btnLoadCST.addEventListener("click", async () => {
+      els.btnLoadCST.disabled = true;
+      els.btnLoadCST.textContent = "Chargement...";
 
-      refreshFilterOptions(); // ✅ NEW
-      renderTable();
+      try {
+        const response = await fetch("CST_KPI.json");
+        if (!response.ok) {
+          throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+        const parsed = await response.json();
+
+        if (!Array.isArray(parsed)) {
+          alert("Le fichier CST_KPI.json doit être un tableau (array) d'objets.");
+          return;
+        }
+
+        data = parsed;
+        ensureKpiIds();
+        actions = loadActions();
+        saveActions();
+
+        refreshFilterOptions();
+        renderTable();
+      } catch (err) {
+        console.error(err);
+        alert("Impossible de charger CST_KPI.json. Vérifiez que le fichier existe.");
+      } finally {
+        els.btnLoadCST.disabled = false;
+        els.btnLoadCST.textContent = "Charger données CST";
+      }
     });
 
     els.btnExportExcelSelections.addEventListener("click", exportExcelSelections);
