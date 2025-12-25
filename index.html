@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <!-- Made by Youssef Chigane -->
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Suivi Engagements & KPI</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+
+  <!-- SheetJS (XLSX export) -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <style>
+    :root{
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --shadow: 0 10px 30px rgba(17,24,39,.08);
+      --row-gap: 12px;
+
+      --state-none-bg: #ffffff;
+      --state-none-br: #e5e7eb;
+      --state-partial-bg: #eef6ff;
+      --state-partial-br: #93c5fd;
+      --state-done-bg: #effaf2;
+      --state-done-br: #86efac;
+
+      --pill-bg: #f3f4f6;
+      --pill-br: #e5e7eb;
+    }
+
+    body{
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+
+    .app-shell{
+      max-width: 1320px;
+      margin: 24px auto;
+      padding: 0 14px 40px;
+    }
+
+    .topbar{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .stats-grid{
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    @media (max-width: 992px){
+      .stats-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .stat{
+      background: #fbfcfe;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 12px;
+    }
+    .stat .label{ color: var(--muted); font-size: .85rem; }
+    .stat .value{ font-size: 1.35rem; font-weight: 800; margin-top: 2px; }
+
+    .controlbar{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .upload-compact{
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .upload-compact .form-control{ max-width: 280px; }
+
+    .filters{
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .filters .form-control, .filters .form-select{
+      min-width: 220px;
+    }
+
+    .table-wrap{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+
+    table.table{ color: var(--text) !important; }
+    table.table td, table.table th{ color: var(--text) !important; vertical-align: top; }
+    .table thead th{
+      color: var(--muted) !important;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border) !important;
+    }
+
+    .row-card{
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      background: var(--state-none-bg);
+      cursor: pointer;
+      transition: transform .06s ease, box-shadow .12s ease;
+      box-shadow: 0 6px 16px rgba(17,24,39,.05);
+    }
+    .row-card:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(17,24,39,.08);
+    }
+    .row-card.state-none{ background: var(--state-none-bg); border-color: var(--state-none-br); }
+    .row-card.state-partial{ background: var(--state-partial-bg); border-color: var(--state-partial-br); }
+    .row-card.state-done{ background: var(--state-done-bg); border-color: var(--state-done-br); }
+
+    .ref-badge{
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--pill-bg);
+      border: 1px solid var(--pill-br);
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .mini-state{
+      display: inline-block;
+      width: 10px; height: 10px;
+      border-radius: 999px;
+      background: #d1d5db;
+    }
+    .state-none .mini-state{ background: #cbd5e1; }
+    .state-partial .mini-state{ background: #3b82f6; }
+    .state-done .mini-state{ background: #22c55e; }
+
+    .engagement-text{ font-weight: 700; line-height: 1.25; }
+
+    .detail-list{
+      margin: 8px 0 0;
+      padding-left: 18px;
+      color: #1f2937;
+    }
+    .detail-list li{ margin-bottom: 4px; }
+
+    .offcanvas.offcanvas-end.wide-80{
+      width: 80vw !important;
+      max-width: 1100px;
+    }
+    @media (max-width: 768px){
+      .offcanvas.offcanvas-end.wide-80{ width: 100vw !important; }
+    }
+
+    .kpi-grid{
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    @media (min-width: 992px){
+      .kpi-grid{ grid-template-columns: 1fr 1fr; }
+    }
+
+    .kpi-card{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      box-shadow: 0 6px 16px rgba(17,24,39,.04);
+    }
+    .kpi-title{
+      font-weight: 800;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .kpi-id{
+      font-size: .85rem;
+      color: var(--muted);
+      font-weight: 700;
+      background: #f3f4f6;
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .kpi-meta{
+      margin: 0;
+      color: #1f2937;
+      font-size: .92rem;
+    }
+    .kpi-meta .k{
+      color: var(--muted);
+      font-weight: 700;
+      margin-right: 6px;
+    }
+
+    .seg{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .seg input{ display:none; }
+    .seg label{
+      border: 1px solid var(--border);
+      background: #f9fafb;
+      color: #111827;
+      padding: 8px 10px;
+      border-radius: 12px;
+      cursor: pointer;
+      user-select: none;
+      font-weight: 700;
+      font-size: .9rem;
+      transition: all .12s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .seg label:hover{ border-color: #cbd5e1; background: #ffffff; }
+    .seg input:checked + label{
+      border-color: rgba(37,99,235,.45);
+      box-shadow: 0 0 0 4px rgba(37,99,235,.12);
+      background: #ffffff;
+    }
+
+    .seg .dot{ width: 10px; height: 10px; border-radius: 999px; background: #cbd5e1; display: inline-block; }
+    .dot-oui{ background: #22c55e; }
+    .dot-non{ background: #ef4444; }
+    .dot-prob{ background: #f59e0b; }
+    .dot-haute{ background: #7c3aed; }
+    .dot-moy{ background: #2563eb; }
+    .dot-faible{ background: #64748b; }
+
+    .subtle{ color: var(--muted); font-size: .9rem; }
+
+    .empty{
+      border: 1px dashed #cbd5e1;
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 18px;
+      text-align: center;
+      color: var(--muted);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-shell">
+
+    <div class="topbar">
+      <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap">
+        <div>
+          <h4 class="mb-1" style="font-weight:900;">Tableau de suivi — Engagements & KPI</h4>
+          <div class="subtle">Clique sur un engagement pour voir et renseigner ses KPI (sauvegarde auto).</div>
+        </div>
+
+        <div class="upload-compact">
+          <input id="fileInput" class="form-control form-control-sm" type="file" accept=".json,application/json">
+          <button id="btnExportExcelSelections" class="btn btn-sm btn-success">Exporter Excel (sélections)</button>
+        </div>
+      </div>
+
+      <div class="mt-3 stats-grid">
+        <div class="stat">
+          <div class="label">Engagements</div>
+          <div id="statEngagements" class="value">0</div>
+        </div>
+        <div class="stat">
+          <div class="label">KPI total</div>
+          <div id="statKpi" class="value">0</div>
+        </div>
+        <div class="stat">
+          <div class="label">Engagements complétés</div>
+          <div id="statDone" class="value">0</div>
+        </div>
+        <div class="stat">
+          <div class="label">Partiels / Non initiés</div>
+          <div id="statOther" class="value">0</div>
+        </div>
+      </div>
+
+      <div class="controlbar">
+        <div class="filters">
+          <input id="searchInput" class="form-control form-control-sm" type="text" placeholder="Rechercher (référence, engagement, détail, KPI…)" />
+
+          <!-- ✅ NEW: Domaine filter -->
+          <select id="domainFilter" class="form-select form-select-sm">
+            <option value="all">Tous les domaines</option>
+          </select>
+
+          <!-- ✅ NEW: KPI filter -->
+          <select id="kpiFilter" class="form-select form-select-sm">
+            <option value="all">Tous les KPI</option>
+          </select>
+
+          <select id="statusFilter" class="form-select form-select-sm">
+            <option value="all">Tous les états</option>
+            <option value="done">Complété</option>
+            <option value="partial">Partiellement complété</option>
+            <option value="none">Pas initié</option>
+          </select>
+        </div>
+
+        <div class="subtle">
+          Fichier de référence (fixe) : <strong>kpi_reference_actions</strong> (LocalStorage)
+        </div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <div id="emptyState" class="empty">
+        Charge un fichier JSON pour afficher les engagements.
+      </div>
+
+      <div class="table-responsive" id="tableArea" style="display:none;">
+        <table class="table table-borderless align-middle mb-0">
+          <thead>
+            <tr>
+              <th style="width:160px;">Référence</th>
+              <th>Engagement</th>
+              <th style="width:42%;">Détail de l'engagement</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyEngagements" style="display:flex; flex-direction:column; gap: var(--row-gap); padding-top:10px;"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Offcanvas KPI -->
+  <div class="offcanvas offcanvas-end wide-80" tabindex="-1" id="kpiCanvas" aria-labelledby="kpiCanvasLabel">
+    <div class="offcanvas-header">
+      <div>
+        <h5 class="offcanvas-title" id="kpiCanvasLabel" style="font-weight:900;">KPI</h5>
+        <div id="kpiCanvasSubtitle" class="subtle"></div>
+      </div>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fermer"></button>
+    </div>
+    <div class="offcanvas-body">
+      <div id="kpiBody"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    const REFERENCE_KEY = "kpi_reference_actions";
+
+    let data = [];
+    let actions = loadActions();
+    let currentEngagementIndex = null;
+
+    const els = {
+      fileInput: document.getElementById("fileInput"),
+      btnLoadDemo: document.getElementById("btnLoadDemo"),
+      btnExportExcelSelections: document.getElementById("btnExportExcelSelections"),
+      emptyState: document.getElementById("emptyState"),
+      tableArea: document.getElementById("tableArea"),
+      tbody: document.getElementById("tbodyEngagements"),
+      search: document.getElementById("searchInput"),
+      statusFilter: document.getElementById("statusFilter"),
+      domainFilter: document.getElementById("domainFilter"),
+      kpiFilter: document.getElementById("kpiFilter"),
+      statEngagements: document.getElementById("statEngagements"),
+      statKpi: document.getElementById("statKpi"),
+      statDone: document.getElementById("statDone"),
+      statOther: document.getElementById("statOther"),
+      kpiSubtitle: document.getElementById("kpiCanvasSubtitle"),
+      kpiBody: document.getElementById("kpiBody")
+    };
+
+    // ---------- Storage ----------
+    function loadActions(){
+      try{
+        const raw = localStorage.getItem(REFERENCE_KEY);
+        if(!raw) return { kpi: {} };
+        const parsed = JSON.parse(raw);
+        if(!parsed || typeof parsed !== "object") return { kpi: {} };
+        if(!parsed.kpi) parsed.kpi = {};
+        return parsed;
+      }catch(e){
+        return { kpi: {} };
+      }
+    }
+
+    function saveActions(){
+      localStorage.setItem(REFERENCE_KEY, JSON.stringify(actions));
+    }
+
+    // ---------- Helpers ----------
+    function safeArray(v){ return Array.isArray(v) ? v : []; }
+
+    function getKpiId(kpiObj){
+      return (kpiObj && (kpiObj.ID ?? kpiObj.Id ?? kpiObj.id ?? null));
+    }
+
+    function ensureKpiIds(){
+      let maxId = 0;
+
+      data.forEach(item => {
+        safeArray(item["Indicateurs & KPI"]).forEach(kpi => {
+          const id = getKpiId(kpi);
+          if(id !== null && id !== undefined){
+            const n = Number(id);
+            if(Number.isFinite(n)) maxId = Math.max(maxId, n);
+          }
+        });
+      });
+
+      data.forEach(item => {
+        safeArray(item["Indicateurs & KPI"]).forEach(kpi => {
+          let id = getKpiId(kpi);
+          if(id === null || id === undefined || id === ""){
+            maxId += 1;
+            kpi.ID = maxId;
+          }else{
+            if(kpi.ID === undefined) kpi.ID = id;
+          }
+        });
+      });
+    }
+
+    function computeEngagementState(item){
+      const kpis = safeArray(item["Indicateurs & KPI"]);
+      if(kpis.length === 0) return "none";
+
+      let filled = 0;
+      for(const kpi of kpis){
+        const id = String(kpi.ID);
+        const d = actions.kpi[id];
+        if(d && (d.confidence || d.importance)) filled++;
+      }
+      if(filled === 0) return "none";
+      if(filled === kpis.length) return "done";
+      return "partial";
+    }
+
+    function stateLabelFr(state){
+      if(state === "done") return "Complété";
+      if(state === "partial") return "Partiellement complété";
+      return "Pas initié";
+    }
+
+    function normalizeKey(obj, candidates){
+      for(const k of candidates){
+        if(obj && obj[k] !== undefined && obj[k] !== null && obj[k] !== "") return obj[k];
+      }
+      return "";
+    }
+
+    function matchesSearch(item, q){
+      if(!q) return true;
+      const s = q.toLowerCase();
+
+      const ref = String(item["Référence contractuelle"] ?? "").toLowerCase();
+      const eng = String(item["Engagement"] ?? "").toLowerCase();
+      const details = safeArray(item["Points détaillés de l'engagement"]).join(" ").toLowerCase();
+
+      const kpis = safeArray(item["Indicateurs & KPI"]).map(k => {
+        return [
+          k.Nom_KPI, k.Définition, k.Unité, k.Périodicité, k.Méthode_de_calcul, k.Source_donnée
+        ].filter(Boolean).join(" ");
+      }).join(" ").toLowerCase();
+
+      return (ref.includes(s) || eng.includes(s) || details.includes(s) || kpis.includes(s));
+    }
+
+    // ---------- ✅ NEW: populate filters ----------
+    function fillSelect(selectEl, values, allLabel){
+      const current = selectEl.value || "all";
+      selectEl.innerHTML = `<option value="all">${escapeHtml(allLabel)}</option>`;
+      values.forEach(v => {
+        const opt = document.createElement("option");
+        opt.value = v;
+        opt.textContent = v;
+        selectEl.appendChild(opt);
+      });
+      // keep selection if possible
+      if([..."all", ...values].includes(current)) selectEl.value = current;
+      else selectEl.value = "all";
+    }
+
+    function refreshFilterOptions(){
+      const domains = Array.from(new Set(
+        data.map(x => String(x["Domaine"] ?? "").trim()).filter(Boolean)
+      )).sort((a,b) => a.localeCompare(b, 'fr'));
+
+      const kpiNames = Array.from(new Set(
+        data.flatMap(item =>
+          safeArray(item["Indicateurs & KPI"])
+            .map(k => String(k.Nom_KPI ?? "").trim())
+            .filter(Boolean)
+        )
+      )).sort((a,b) => a.localeCompare(b, 'fr'));
+
+      fillSelect(els.domainFilter, domains, "Tous les domaines");
+      fillSelect(els.kpiFilter, kpiNames, "Tous les KPI");
+    }
+
+    // ---------- Excel export ----------
+    function buildFlatRows(){
+      const rows = [];
+      data.forEach((item, engIndex) => {
+        const ref = item["Référence contractuelle"] ?? "";
+        const domaine = item["Domaine"] ?? "";
+        const engagement = item["Engagement"] ?? "";
+        const details = safeArray(item["Points détaillés de l'engagement"]).join(" | ");
+        const state = computeEngagementState(item);
+
+        safeArray(item["Indicateurs & KPI"]).forEach((kpi, kpiIndex) => {
+          const id = String(kpi.ID);
+          const saved = actions.kpi[id] || {};
+
+          rows.push({
+            engagement_index: engIndex,
+            kpi_index: kpiIndex,
+            reference_contractuelle: ref,
+            domaine: domaine,
+            engagement_state: stateLabelFr(state),
+            engagement: engagement,
+            engagement_details: details,
+
+            kpi_id: id,
+            kpi_nom: normalizeKey(kpi, ["Nom_KPI","Nom KPI","Nom","name"]),
+            kpi_definition: normalizeKey(kpi, ["Définition","Definition"]),
+            kpi_unite: normalizeKey(kpi, ["Unité","Unite","Unit"]),
+            kpi_periodicite: normalizeKey(kpi, ["Périodicité","Periodicite"]),
+            kpi_methode_calcul: normalizeKey(kpi, ["Méthode_de_calcul","Methode_de_calcul","Méthode de calcul"]),
+            kpi_source_donnee: normalizeKey(kpi, ["Source_donnée","Source_donnee","Source"]),
+
+            selection_confiance: saved.confidence || "",
+            selection_importance: saved.importance || "",
+            selection_updatedAt: saved.updatedAt || ""
+          });
+        });
+      });
+      return rows;
+    }
+
+    function autoFitColumns(ws, json){
+      const keys = Object.keys(json[0] || {});
+      const colWidths = keys.map(k => {
+        let max = k.length;
+        for(const r of json){
+          max = Math.max(max, String(r[k] ?? "").length);
+        }
+        return { wch: Math.min(Math.max(max + 2, 10), 60) };
+      });
+      ws["!cols"] = colWidths;
+    }
+
+    function exportExcelSelections(){
+      const rows = buildFlatRows().map(r => ({
+        reference_contractuelle: r.reference_contractuelle,
+        domaine: r.domaine,
+        engagement: r.engagement,
+        kpi_id: r.kpi_id,
+        kpi_nom: r.kpi_nom,
+        selection_confiance: r.selection_confiance,
+        selection_importance: r.selection_importance,
+        selection_updatedAt: r.selection_updatedAt
+      }));
+
+      if(!rows.length){
+        alert("Rien à exporter (aucun KPI).");
+        return;
+      }
+
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(rows);
+      autoFitColumns(ws, rows);
+      XLSX.utils.book_append_sheet(wb, ws, "Selections");
+
+      const ts = new Date().toISOString().slice(0,19).replaceAll(":","-");
+      XLSX.writeFile(wb, `export_kpi_selections_${ts}.xlsx`);
+    }
+
+    // ---------- Render ----------
+    function refreshStats(){
+      const totalEng = data.length;
+      let totalKpi = 0;
+      let done = 0;
+      let partial = 0;
+      let none = 0;
+
+      for(const item of data){
+        const kpis = safeArray(item["Indicateurs & KPI"]);
+        totalKpi += kpis.length;
+        const st = computeEngagementState(item);
+        if(st === "done") done++;
+        else if(st === "partial") partial++;
+        else none++;
+      }
+
+      els.statEngagements.textContent = totalEng;
+      els.statKpi.textContent = totalKpi;
+      els.statDone.textContent = done;
+      els.statOther.textContent = (partial + none) + " (" + partial + " / " + none + ")";
+    }
+
+    function renderTable(){
+      els.tbody.innerHTML = "";
+      const q = (els.search.value || "").trim();
+      const stFilter = els.statusFilter.value;
+      const domFilter = els.domainFilter.value;
+      const kpiFilter = els.kpiFilter.value;
+
+      const rows = data
+        .map((item, idx) => ({ item, idx, state: computeEngagementState(item) }))
+        .filter(({item, state}) => {
+          // status
+          if(stFilter !== "all" && state !== stFilter) return false;
+
+          // domaine
+          if(domFilter !== "all"){
+            const dom = String(item["Domaine"] ?? "").trim();
+            if(dom !== domFilter) return false;
+          }
+
+          // KPI name
+          if(kpiFilter !== "all"){
+            const names = safeArray(item["Indicateurs & KPI"]).map(k => String(k.Nom_KPI ?? "").trim());
+            if(!names.includes(kpiFilter)) return false;
+          }
+
+          // global search
+          return matchesSearch(item, q);
+        });
+
+      if(data.length === 0){
+        els.emptyState.style.display = "block";
+        els.tableArea.style.display = "none";
+        return;
+      }
+
+      els.emptyState.style.display = rows.length ? "none" : "block";
+      els.tableArea.style.display = "block";
+
+      if(!rows.length){
+        els.emptyState.textContent = "Aucun résultat avec ces filtres.";
+        return;
+      }else{
+        els.emptyState.textContent = "Charge un fichier JSON pour afficher les engagements.";
+      }
+
+      for(const { item, idx, state } of rows){
+        const ref = item["Référence contractuelle"] ?? "";
+        const engagement = item["Engagement"] ?? "";
+        const details = safeArray(item["Points détaillés de l'engagement"]);
+
+        const tr = document.createElement("tr");
+        tr.style.display = "block";
+        tr.innerHTML = `
+          <td style="display:block;">
+            <div class="row-card state-${state}" data-idx="${idx}">
+              <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="ref-badge">
+                    <span class="mini-state"></span>
+                    ${escapeHtml(ref)}
+                  </span>
+                  <span class="subtle">${stateLabelFr(state)}</span>
+                </div>
+                <span class="subtle">${safeArray(item["Indicateurs & KPI"]).length} KPI</span>
+              </div>
+
+              <div class="mt-2 d-grid" style="grid-template-columns: 170px 1fr 1.2fr; gap: 12px;">
+                <div>
+                  <div class="subtle">Référence</div>
+                  <div class="fw-bold">${escapeHtml(ref)}</div>
+                </div>
+
+                <div>
+                  <div class="subtle">Engagement</div>
+                  <div class="engagement-text">${escapeHtml(engagement)}</div>
+                </div>
+
+                <div>
+                  <div class="subtle">Détail de l'engagement</div>
+                  ${
+                    details.length
+                      ? `<ul class="detail-list">${details.map(d => `<li>${escapeHtml(d)}</li>`).join("")}</ul>`
+                      : `<div class="subtle">—</div>`
+                  }
+                </div>
+              </div>
+            </div>
+          </td>
+        `;
+
+        tr.querySelector(".row-card").addEventListener("click", () => openKpiPanel(idx));
+        els.tbody.appendChild(tr);
+      }
+
+      refreshStats();
+    }
+
+    function openKpiPanel(idx){
+      currentEngagementIndex = idx;
+      const item = data[idx];
+      const ref = item["Référence contractuelle"] ?? "";
+      const engagement = item["Engagement"] ?? "";
+
+      els.kpiSubtitle.textContent = `Réf: ${ref} — ${String(engagement).slice(0, 140)}${String(engagement).length > 140 ? "…" : ""}`;
+      renderKpis(item);
+
+      const canvasEl = document.getElementById("kpiCanvas");
+      const off = bootstrap.Offcanvas.getOrCreateInstance(canvasEl);
+      off.show();
+    }
+
+    function renderKpis(item){
+      const kpis = safeArray(item["Indicateurs & KPI"]);
+      if(kpis.length === 0){
+        els.kpiBody.innerHTML = `<div class="empty">Aucun KPI pour cet engagement.</div>`;
+        return;
+      }
+
+      const html = `
+        <div class="kpi-grid">
+          ${kpis.map((kpi, i) => renderOneKpi(kpi, i)).join("")}
+        </div>
+      `;
+      els.kpiBody.innerHTML = html;
+
+      kpis.forEach((kpi) => {
+        const id = String(kpi.ID);
+        const confName = `conf_${id}`;
+        const impName = `imp_${id}`;
+
+        document.querySelectorAll(`input[name="${confName}"]`).forEach(inp => {
+          inp.addEventListener("change", () => {
+            ensureActionKpi(id);
+            actions.kpi[id].confidence = inp.value;
+            actions.kpi[id].updatedAt = new Date().toISOString();
+            saveActions();
+            onDecisionChanged();
+          });
+        });
+
+        document.querySelectorAll(`input[name="${impName}"]`).forEach(inp => {
+          inp.addEventListener("change", () => {
+            ensureActionKpi(id);
+            actions.kpi[id].importance = inp.value;
+            actions.kpi[id].updatedAt = new Date().toISOString();
+            saveActions();
+            onDecisionChanged();
+          });
+        });
+      });
+    }
+
+    function ensureActionKpi(id){
+      if(!actions.kpi[id]) actions.kpi[id] = { confidence: "", importance: "", updatedAt: "" };
+    }
+
+    function onDecisionChanged(){
+      renderTable();
+      if(currentEngagementIndex !== null && data[currentEngagementIndex]){
+        renderKpis(data[currentEngagementIndex]);
+      }
+    }
+
+    function renderOneKpi(kpi, idx){
+      const id = String(kpi.ID);
+      const name = kpi.Nom_KPI ?? `KPI ${idx+1}`;
+      const def = kpi.Définition ?? "";
+      const unite = kpi.Unité ?? "";
+      const periodicite = kpi.Périodicité ?? "";
+      const calc = kpi["Méthode_de_calcul"] ?? "";
+      const source = kpi["Source_donnée"] ?? "";
+
+      const saved = actions.kpi[id] || {};
+      const conf = saved.confidence || "";
+      const imp = saved.importance || "";
+
+      const confName = `conf_${id}`;
+      const impName  = `imp_${id}`;
+
+      return `
+        <div class="kpi-card">
+          <div class="kpi-title">
+            <div>${escapeHtml(name)}</div>
+            <div class="kpi-id">ID: ${escapeHtml(id)}</div>
+          </div>
+
+          <p class="kpi-meta mb-2"><span class="k">Définition:</span> ${escapeHtml(def) || "—"}</p>
+          <p class="kpi-meta mb-1"><span class="k">Unité:</span> ${escapeHtml(unite) || "—"}</p>
+          <p class="kpi-meta mb-1"><span class="k">Périodicité:</span> ${escapeHtml(periodicite) || "—"}</p>
+          <p class="kpi-meta mb-1"><span class="k">Calcul:</span> ${escapeHtml(calc) || "—"}</p>
+          <p class="kpi-meta mb-2"><span class="k">Source:</span> ${escapeHtml(source) || "—"}</p>
+
+          <div class="mt-3">
+            <div class="subtle mb-2"><strong>Confiance</strong> (Oui / Non / Probablement)</div>
+            <div class="seg" role="radiogroup" aria-label="Confiance">
+              ${radio(confName, id, "Oui", conf === "Oui", "dot-oui")}
+              ${radio(confName, id, "Non", conf === "Non", "dot-non")}
+              ${radio(confName, id, "Probablement", conf === "Probablement", "dot-prob")}
+            </div>
+          </div>
+
+          <div class="mt-3">
+            <div class="subtle mb-2"><strong>Importance</strong> (Haute / Moyenne / Faible)</div>
+            <div class="seg" role="radiogroup" aria-label="Importance">
+              ${radio(impName, id, "Haute", imp === "Haute", "dot-haute")}
+              ${radio(impName, id, "Moyenne", imp === "Moyenne", "dot-moy")}
+              ${radio(impName, id, "Faible", imp === "Faible", "dot-faible")}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function radio(groupName, id, value, checked, dotClass){
+      const inputId = `${groupName}_${value}_${id}`.replace(/\s+/g,'_');
+      return `
+        <div>
+          <input type="radio" id="${escapeAttr(inputId)}" name="${escapeAttr(groupName)}" value="${escapeAttr(value)}" ${checked ? "checked" : ""}>
+          <label for="${escapeAttr(inputId)}">
+            <span class="dot ${dotClass}"></span>
+            ${escapeHtml(value)}
+          </label>
+        </div>
+      `;
+    }
+
+    // ---------- Events ----------
+    els.fileInput.addEventListener("change", async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if(!file) return;
+
+      try{
+        const text = await file.text();
+        const parsed = JSON.parse(text);
+
+        if(!Array.isArray(parsed)){
+          alert("Le fichier JSON doit être un tableau (array) d'objets.");
+          return;
+        }
+
+        data = parsed;
+        ensureKpiIds();
+
+        actions = loadActions();
+        saveActions();
+
+        refreshFilterOptions();   // ✅ NEW
+        renderTable();
+      }catch(err){
+        console.error(err);
+        alert("Impossible de lire ce fichier. Vérifie qu'il s'agit d'un JSON valide.");
+      }finally{
+        e.target.value = "";
+      }
+    });
+
+    els.search.addEventListener("input", renderTable);
+    els.statusFilter.addEventListener("change", renderTable);
+    els.domainFilter.addEventListener("change", renderTable); // ✅ NEW
+    els.kpiFilter.addEventListener("change", renderTable);    // ✅ NEW
+
+    els.btnLoadDemo.addEventListener("click", () => {
+      data = [
+        {
+          "Domaine":"Foncier et autorisations",
+          "Référence contractuelle":"4.1",
+          "Engagement":"Le Délégant mobilisera le foncier nécessaire…",
+          "Points détaillés de l'engagement":[
+            "Mobiliser le foncier nécessaire.",
+            "Inclure Centres de Maintenance.",
+            "Inclure Centres de Remisage."
+          ],
+          "Indicateurs & KPI":[
+            {"Nom_KPI":"Existence foncier Maintenance","Définition":"Indique si terrains mobilisés.","Unité":"oui/non"},
+            {"Nom_KPI":"Existence foncier Remisage","Définition":"Indique si terrains mobilisés.","Unité":"oui/non"}
+          ]
+        },
+        {
+          "Domaine":"Organisation interne",
+          "Référence contractuelle":"5.1.1",
+          "Engagement":"Le Délégataire met en place une organisation…",
+          "Points détaillés de l'engagement":[
+            "Développer compétences stratégiques.",
+            "Internaliser activités récurrentes."
+          ],
+          "Indicateurs & KPI":[
+            {"Nom_KPI":"Taux d'internalisation","Définition":"Part des activités internalisées.","Unité":"%"}
+          ]
+        }
+      ];
+      ensureKpiIds();
+      actions = loadActions();
+      saveActions();
+
+      refreshFilterOptions(); // ✅ NEW
+      renderTable();
+    });
+
+    els.btnExportExcelSelections.addEventListener("click", exportExcelSelections);
+
+    // ---------- Utils ----------
+    function escapeHtml(str){
+      return String(str ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+    function escapeAttr(str){ return escapeHtml(str); }
+
+    // Initial
+    renderTable();
+    refreshStats();
+  </script>
+</body>
+</html>

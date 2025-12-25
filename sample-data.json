@@ -1,0 +1,150 @@
+[
+  {
+    "Domaine": "Foncier et autorisations",
+    "Référence contractuelle": "4.1",
+    "Engagement": "Le Délégant mobilisera le foncier nécessaire à la réalisation du projet",
+    "Points détaillés de l'engagement": [
+      "Mobiliser le foncier nécessaire pour l'ensemble des infrastructures",
+      "Inclure les terrains pour les Centres de Maintenance",
+      "Inclure les terrains pour les Centres de Remisage"
+    ],
+    "Indicateurs & KPI": [
+      {
+        "Nom_KPI": "Existence foncier Maintenance",
+        "Définition": "Indique si les terrains nécessaires aux centres de maintenance ont été mobilisés",
+        "Unité": "oui/non",
+        "Périodicité": "Annuel",
+        "Méthode_de_calcul": "Vérification documentaire",
+        "Source_donnée": "Actes de propriété"
+      },
+      {
+        "Nom_KPI": "Existence foncier Remisage",
+        "Définition": "Indique si les terrains nécessaires aux centres de remisage ont été mobilisés",
+        "Unité": "oui/non",
+        "Périodicité": "Annuel",
+        "Méthode_de_calcul": "Vérification documentaire",
+        "Source_donnée": "Actes de propriété"
+      }
+    ]
+  },
+  {
+    "Domaine": "Organisation interne",
+    "Référence contractuelle": "5.1.1",
+    "Engagement": "Le Délégataire met en place une organisation permettant le développement des compétences",
+    "Points détaillés de l'engagement": [
+      "Développer les compétences stratégiques en interne",
+      "Internaliser progressivement les activités récurrentes",
+      "Assurer le transfert de savoir-faire"
+    ],
+    "Indicateurs & KPI": [
+      {
+        "Nom_KPI": "Taux d'internalisation",
+        "Définition": "Part des activités récurrentes réalisées en interne",
+        "Unité": "%",
+        "Périodicité": "Trimestriel",
+        "Méthode_de_calcul": "(Activités internes / Total activités) x 100",
+        "Source_donnée": "Rapports d'activité"
+      },
+      {
+        "Nom_KPI": "Nombre de formations réalisées",
+        "Définition": "Nombre total de sessions de formation dispensées",
+        "Unité": "nombre",
+        "Périodicité": "Mensuel",
+        "Méthode_de_calcul": "Comptage des sessions",
+        "Source_donnée": "Registre de formation"
+      }
+    ]
+  },
+  {
+    "Domaine": "Qualité de service",
+    "Référence contractuelle": "6.2.3",
+    "Engagement": "Le Délégataire garantit un niveau de qualité de service conforme aux standards",
+    "Points détaillés de l'engagement": [
+      "Respecter les délais d'intervention",
+      "Assurer la disponibilité des équipements",
+      "Maintenir un taux de satisfaction client élevé"
+    ],
+    "Indicateurs & KPI": [
+      {
+        "Nom_KPI": "Taux de disponibilité",
+        "Définition": "Pourcentage de temps où les équipements sont opérationnels",
+        "Unité": "%",
+        "Périodicité": "Mensuel",
+        "Méthode_de_calcul": "(Temps disponible / Temps total) x 100",
+        "Source_donnée": "Système de supervision"
+      },
+      {
+        "Nom_KPI": "Délai moyen d'intervention",
+        "Définition": "Temps moyen entre la signalisation d'un problème et l'intervention",
+        "Unité": "heures",
+        "Périodicité": "Mensuel",
+        "Méthode_de_calcul": "Moyenne des délais d'intervention",
+        "Source_donnée": "Tickets d'intervention"
+      },
+      {
+        "Nom_KPI": "Taux de satisfaction client",
+        "Définition": "Pourcentage de clients satisfaits ou très satisfaits",
+        "Unité": "%",
+        "Périodicité": "Trimestriel",
+        "Méthode_de_calcul": "(Réponses positives / Total réponses) x 100",
+        "Source_donnée": "Enquêtes de satisfaction"
+      }
+    ]
+  },
+  {
+    "Domaine": "Sécurité",
+    "Référence contractuelle": "7.1",
+    "Engagement": "Le Délégataire met en œuvre une politique de sécurité rigoureuse",
+    "Points détaillés de l'engagement": [
+      "Réduire le nombre d'incidents de sécurité",
+      "Former le personnel aux procédures de sécurité",
+      "Réaliser des audits de sécurité réguliers"
+    ],
+    "Indicateurs & KPI": [
+      {
+        "Nom_KPI": "Nombre d'incidents de sécurité",
+        "Définition": "Nombre total d'incidents de sécurité enregistrés",
+        "Unité": "nombre",
+        "Périodicité": "Mensuel",
+        "Méthode_de_calcul": "Comptage des incidents",
+        "Source_donnée": "Registre des incidents"
+      },
+      {
+        "Nom_KPI": "Taux de formation sécurité",
+        "Définition": "Pourcentage du personnel ayant reçu une formation sécurité",
+        "Unité": "%",
+        "Périodicité": "Annuel",
+        "Méthode_de_calcul": "(Personnel formé / Effectif total) x 100",
+        "Source_donnée": "Registre de formation"
+      }
+    ]
+  },
+  {
+    "Domaine": "Environnement",
+    "Référence contractuelle": "8.3",
+    "Engagement": "Le Délégataire s'engage à réduire l'impact environnemental de ses activités",
+    "Points détaillés de l'engagement": [
+      "Réduire les émissions de CO2",
+      "Optimiser la consommation d'énergie",
+      "Mettre en place le tri sélectif des déchets"
+    ],
+    "Indicateurs & KPI": [
+      {
+        "Nom_KPI": "Émissions de CO2",
+        "Définition": "Volume total d'émissions de CO2 générées par les activités",
+        "Unité": "tonnes CO2",
+        "Périodicité": "Annuel",
+        "Méthode_de_calcul": "Bilan carbone",
+        "Source_donnée": "Rapports environnementaux"
+      },
+      {
+        "Nom_KPI": "Consommation énergétique",
+        "Définition": "Consommation totale d'énergie",
+        "Unité": "kWh",
+        "Périodicité": "Mensuel",
+        "Méthode_de_calcul": "Relevé des compteurs",
+        "Source_donnée": "Factures énergétiques"
+      }
+    ]
+  }
+]
