@@ -215,26 +215,30 @@
       box-shadow: 0 0 0 4px rgba(79,70,229,.1);
     }
 
-    .table-wrap{
+    /* Cards Container */
+    .cards-container{
       background: var(--card);
       border: none;
       border-radius: 20px;
       box-shadow: var(--shadow-lg);
       padding: 24px;
+      margin-bottom: 100px; /* Space for floating button */
+    }
+    @media (max-width: 576px){
+      .cards-container{
+        padding: 16px;
+        border-radius: 16px;
+        margin-bottom: 80px;
+      }
     }
 
-    table.table{ color: var(--text) !important; }
-    table.table td, table.table th{ color: var(--text) !important; vertical-align: top; }
-    .table thead th{
-      color: var(--muted) !important;
-      font-weight: 700;
-      font-size: .85rem;
-      text-transform: uppercase;
-      letter-spacing: .5px;
-      border-bottom: 2px solid var(--border) !important;
-      padding-bottom: 16px;
+    .cards-list{
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
 
+    /* Individual Card */
     .row-card{
       border: 2px solid var(--border);
       border-radius: 16px;
@@ -244,6 +248,15 @@
       transition: all .25s cubic-bezier(.4,0,.2,1);
       box-shadow: 0 1px 3px rgba(0,0,0,.05);
       position: relative;
+      width: 100%;
+      height: auto; /* Auto height - no fixed heights */
+      overflow: visible; /* No internal scrolling */
+    }
+    @media (max-width: 576px){
+      .row-card{
+        padding: 16px;
+        border-radius: 12px;
+      }
     }
     .row-card::after{
       content: '';
@@ -256,7 +269,7 @@
       box-shadow: 0 20px 40px rgba(79,70,229,.15);
     }
     .row-card:hover{
-      transform: translateY(-4px);
+      transform: translateY(-2px);
       border-color: var(--primary-light);
     }
     .row-card:hover::after{
@@ -299,37 +312,125 @@
       color: #334155;
     }
 
+    /* Card Header - responsive flex layout */
     .card-header{
       display: flex;
-      align-items: center;
-      gap: 12px;
+      align-items: flex-start;
+      gap: 10px;
       flex-wrap: wrap;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
+    }
+    @media (max-width: 576px){
+      .card-header{
+        gap: 8px;
+      }
+    }
+    .card-header .badges-row{
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      flex: 1;
+      min-width: 0;
+    }
+    .card-header .status-row{
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    @media (max-width: 480px){
+      .card-header{
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .card-header .status-row{
+        justify-content: flex-start;
+        margin-top: 4px;
+      }
     }
 
+    /* Card Content - text wrapping */
     .card-content{
       font-size: .95rem;
-      line-height: 1.6;
+      line-height: 1.7;
       color: #334155;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      hyphens: auto;
     }
     .card-content strong{
       color: var(--primary);
       font-weight: 700;
     }
+    .card-content .engagement-text{
+      display: block;
+      margin-top: 4px;
+    }
 
-    .detail-inline{
+    /* Collapsible content for long text */
+    .card-content.collapsed .engagement-text{
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .card-content.expanded .engagement-text{
+      display: block;
+    }
+    .toggle-expand{
+      display: inline-block;
       margin-top: 8px;
-      padding-top: 8px;
+      color: var(--primary);
+      font-weight: 600;
+      font-size: .85rem;
+      cursor: pointer;
+      border: none;
+      background: none;
+      padding: 0;
+    }
+    .toggle-expand:hover{
+      text-decoration: underline;
+    }
+
+    /* Details section */
+    .detail-section{
+      margin-top: 12px;
+      padding-top: 12px;
       border-top: 1px solid var(--border);
-      font-size: .875rem;
-      color: #64748b;
     }
-    .detail-inline ul{
-      margin: 4px 0 0;
+    .detail-section.collapsed .detail-list{
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .detail-section .detail-header{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .detail-section .detail-title{
+      font-weight: 700;
+      font-size: .85rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    .detail-list{
+      margin: 0;
       padding-left: 20px;
+      color: #475569;
+      font-size: .9rem;
+      line-height: 1.6;
     }
-    .detail-inline li{
-      margin-bottom: 2px;
+    .detail-list li{
+      margin-bottom: 4px;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
     }
 
     .row-card .engagement-preview{
@@ -503,8 +604,14 @@
     .footer{
       text-align: center;
       padding: 20px;
+      padding-bottom: 80px; /* Space for floating button */
       color: var(--muted);
       font-size: .8rem;
+    }
+    @media (max-width: 576px){
+      .footer{
+        padding-bottom: 70px;
+      }
     }
     .footer a{
       color: var(--primary);
@@ -524,7 +631,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 14px 20px;
+      padding: 14px 24px;
       font-size: .95rem;
       font-weight: 700;
       color: #fff;
@@ -547,17 +654,19 @@
     }
     @media (max-width: 576px){
       .fab-export{
-        bottom: 16px;
-        right: 16px;
-        padding: 12px 16px;
-        font-size: .85rem;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border-radius: 0;
+        justify-content: center;
+        padding: 16px 20px;
+        font-size: .9rem;
       }
       .fab-export span{
-        display: none;
+        display: inline;
       }
-      .fab-export{
-        border-radius: 50%;
-        padding: 16px;
+      .fab-export i{
+        font-size: 1.2rem;
       }
     }
   </style>
@@ -631,24 +740,13 @@
       </div>
     </div>
 
-    <div class="table-wrap">
+    <div class="cards-container">
       <div id="emptyState" class="empty">
         <i class="bi bi-folder2-open d-block"></i>
         <p>Charge un fichier JSON ou clique sur "Charger données CST" pour commencer</p>
       </div>
 
-      <div class="table-responsive" id="tableArea" style="display:none;">
-        <table class="table table-borderless align-middle mb-0">
-          <thead>
-            <tr>
-              <th style="width:160px;">Référence</th>
-              <th>Engagement</th>
-              <th style="width:42%;">Détail de l'engagement</th>
-            </tr>
-          </thead>
-          <tbody id="tbodyEngagements" style="display:flex; flex-direction:column; gap: var(--row-gap); padding-top:10px;"></tbody>
-        </table>
-      </div>
+      <div id="cardsList" class="cards-list"></div>
     </div>
 
     <!-- Footer -->
@@ -692,8 +790,7 @@
       btnLoadCST: document.getElementById("btnLoadCST"),
       btnExportExcelSelections: document.getElementById("btnExportExcelSelections"),
       emptyState: document.getElementById("emptyState"),
-      tableArea: document.getElementById("tableArea"),
-      tbody: document.getElementById("tbodyEngagements"),
+      cardsList: document.getElementById("cardsList"),
       search: document.getElementById("searchInput"),
       statusFilter: document.getElementById("statusFilter"),
       domainFilter: document.getElementById("domainFilter"),
@@ -705,6 +802,10 @@
       kpiSubtitle: document.getElementById("kpiCanvasSubtitle"),
       kpiBody: document.getElementById("kpiBody")
     };
+
+    // Character threshold for showing "Show more" button
+    const ENGAGEMENT_CHAR_LIMIT = 300;
+    const DETAILS_ITEM_LIMIT = 4;
 
     // ---------- Storage ----------
     function loadActions(){
@@ -936,11 +1037,11 @@
     }
 
     function renderTable(){
-      els.tbody.innerHTML = "";
+      els.cardsList.innerHTML = "";
       const q = (els.search.value || "").trim();
       const stFilter = els.statusFilter.value;
       const domFilter = els.domainFilter.value;
-      const kpiFilter = els.kpiFilter.value;
+      const kpiFilterVal = els.kpiFilter.value;
 
       const rows = data
         .map((item, idx) => ({ item, idx, state: computeEngagementState(item) }))
@@ -955,9 +1056,9 @@
           }
 
           // KPI name
-          if(kpiFilter !== "all"){
+          if(kpiFilterVal !== "all"){
             const names = safeArray(item["Indicateurs & KPI"]).map(k => String(k.Nom_KPI ?? "").trim());
-            if(!names.includes(kpiFilter)) return false;
+            if(!names.includes(kpiFilterVal)) return false;
           }
 
           // global search
@@ -966,18 +1067,18 @@
 
       if(data.length === 0){
         els.emptyState.style.display = "block";
-        els.tableArea.style.display = "none";
+        els.cardsList.style.display = "none";
         return;
       }
 
       els.emptyState.style.display = rows.length ? "none" : "block";
-      els.tableArea.style.display = "block";
+      els.cardsList.style.display = "flex";
 
       if(!rows.length){
-        els.emptyState.textContent = "Aucun résultat avec ces filtres.";
+        els.emptyState.innerHTML = '<i class="bi bi-search d-block"></i><p>Aucun résultat avec ces filtres.</p>';
         return;
       }else{
-        els.emptyState.textContent = "Charge un fichier JSON pour afficher les engagements.";
+        els.emptyState.innerHTML = '<i class="bi bi-folder2-open d-block"></i><p>Charge un fichier JSON ou clique sur "Charger données CST" pour commencer</p>';
       }
 
       for(const { item, idx, state } of rows){
@@ -987,35 +1088,74 @@
         const details = safeArray(item["Points détaillés de l'engagement"]);
         const kpiCount = safeArray(item["Indicateurs & KPI"]).length;
 
-        const tr = document.createElement("tr");
-        tr.style.display = "block";
-        tr.innerHTML = `
-          <td style="display:block;">
-            <div class="row-card state-${state}" data-idx="${idx}">
-              <div class="card-header">
-                <span class="ref-badge">
-                  <span class="mini-state"></span>
-                  ${escapeHtml(ref)}
-                </span>
-                ${domaine ? `<span class="badge bg-light text-dark" style="font-weight:500;">${escapeHtml(domaine)}</span>` : ''}
-                <span class="subtle">${stateLabelFr(state)}</span>
-                <span class="badge bg-primary">${kpiCount} KPI</span>
-              </div>
-              <div class="card-content">
-                <strong>Engagement:</strong> ${escapeHtml(engagement)}
-              </div>
-              ${details.length ? `
-                <div class="detail-inline">
-                  <strong>Détails:</strong>
-                  <ul>${details.map(d => `<li>${escapeHtml(d)}</li>`).join("")}</ul>
-                </div>
-              ` : ''}
+        // Check if content is long
+        const isLongEngagement = engagement.length > ENGAGEMENT_CHAR_LIMIT;
+        const hasLongDetails = details.length > DETAILS_ITEM_LIMIT;
+
+        const card = document.createElement("div");
+        card.className = `row-card state-${state}`;
+        card.dataset.idx = idx;
+
+        card.innerHTML = `
+          <div class="card-header">
+            <div class="badges-row">
+              <span class="ref-badge">
+                <span class="mini-state"></span>
+                ${escapeHtml(ref)}
+              </span>
+              ${domaine ? `<span class="badge bg-light text-dark" style="font-weight:500;">${escapeHtml(domaine)}</span>` : ''}
             </div>
-          </td>
+            <div class="status-row">
+              <span class="subtle">${stateLabelFr(state)}</span>
+              <span class="badge bg-primary">${kpiCount} KPI</span>
+            </div>
+          </div>
+          <div class="card-content ${isLongEngagement ? 'collapsed' : ''}" data-long="${isLongEngagement}">
+            <strong>Engagement:</strong>
+            <span class="engagement-text">${escapeHtml(engagement)}</span>
+            ${isLongEngagement ? '<button type="button" class="toggle-expand" data-target="engagement"><i class="bi bi-chevron-down me-1"></i>Voir plus</button>' : ''}
+          </div>
+          ${details.length ? `
+            <div class="detail-section ${hasLongDetails ? 'collapsed' : ''}" data-long="${hasLongDetails}">
+              <div class="detail-header">
+                <span class="detail-title"><i class="bi bi-list-ul me-1"></i>Détails (${details.length})</span>
+                ${hasLongDetails ? '<button type="button" class="toggle-expand" data-target="details"><i class="bi bi-chevron-down me-1"></i>Voir plus</button>' : ''}
+              </div>
+              <ul class="detail-list">${details.map(d => `<li>${escapeHtml(d)}</li>`).join("")}</ul>
+            </div>
+          ` : ''}
         `;
 
-        tr.querySelector(".row-card").addEventListener("click", () => openKpiPanel(idx));
-        els.tbody.appendChild(tr);
+        // Event: click card to open KPI panel
+        card.addEventListener("click", (e) => {
+          // Don't open panel if clicking toggle button
+          if(e.target.closest('.toggle-expand')) return;
+          openKpiPanel(idx);
+        });
+
+        // Event: toggle expand/collapse
+        card.querySelectorAll('.toggle-expand').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const target = btn.dataset.target;
+            const container = target === 'engagement'
+              ? btn.closest('.card-content')
+              : btn.closest('.detail-section');
+
+            const isCollapsed = container.classList.contains('collapsed');
+            container.classList.toggle('collapsed', !isCollapsed);
+            container.classList.toggle('expanded', isCollapsed);
+
+            const icon = btn.querySelector('i');
+            if(isCollapsed){
+              btn.innerHTML = '<i class="bi bi-chevron-up me-1"></i>Voir moins';
+            } else {
+              btn.innerHTML = '<i class="bi bi-chevron-down me-1"></i>Voir plus';
+            }
+          });
+        });
+
+        els.cardsList.appendChild(card);
       }
 
       refreshStats();
