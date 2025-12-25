@@ -155,14 +155,24 @@
     .state-partial .mini-state{ background: #3b82f6; }
     .state-done .mini-state{ background: #22c55e; }
 
-    .engagement-text{ font-weight: 700; line-height: 1.25; }
+    .engagement-text{ font-weight: 700; line-height: 1.4; word-break: break-word; }
+
+    .card-grid{
+      display: grid;
+      grid-template-columns: 140px 1fr 1.2fr;
+      gap: 16px;
+    }
+    @media (max-width: 992px){
+      .card-grid{ grid-template-columns: 1fr; }
+    }
+    .card-grid > div{ min-width: 0; }
 
     .detail-list{
       margin: 8px 0 0;
       padding-left: 18px;
       color: #1f2937;
     }
-    .detail-list li{ margin-bottom: 4px; }
+    .detail-list li{ margin-bottom: 4px; word-break: break-word; }
 
     .offcanvas.offcanvas-end.wide-80{
       width: 80vw !important;
@@ -690,7 +700,7 @@
                 <span class="subtle">${safeArray(item["Indicateurs & KPI"]).length} KPI</span>
               </div>
 
-              <div class="mt-2 d-grid" style="grid-template-columns: 170px 1fr 1.2fr; gap: 12px;">
+              <div class="mt-2 card-grid">
                 <div>
                   <div class="subtle">Référence</div>
                   <div class="fw-bold">${escapeHtml(ref)}</div>
