@@ -299,57 +299,37 @@
       color: #334155;
     }
 
-    .card-grid{
-      display: grid;
-      grid-template-columns: auto 1fr 1fr;
-      gap: 16px;
-      align-items: start;
-    }
-    @media (max-width: 992px){
-      .card-grid{
-        grid-template-columns: 1fr 1fr;
-      }
-      .card-grid > div:first-child{
-        grid-column: 1 / -1;
-      }
-    }
-    @media (max-width: 576px){
-      .card-grid{
-        grid-template-columns: 1fr;
-      }
-      .card-grid > div{
-        grid-column: 1;
-      }
-    }
-    .card-grid > div{ min-width: 0; }
-
-    .card-section{
+    .card-header{
       display: flex;
+      align-items: center;
+      gap: 12px;
       flex-wrap: wrap;
-      gap: 8px;
-    }
-    .card-section .section-title{
-      font-size: .75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .5px;
-      color: var(--muted);
-      width: 100%;
-      margin-bottom: 2px;
+      margin-bottom: 10px;
     }
 
-    .detail-list{
-      margin: 4px 0 0;
-      padding-left: 18px;
-      color: #475569;
-      font-size: .9rem;
+    .card-content{
+      font-size: .95rem;
+      line-height: 1.6;
+      color: #334155;
     }
-    .detail-list li{
-      margin-bottom: 4px;
-      word-break: break-word;
-    }
-    .detail-list li::marker{
+    .card-content strong{
       color: var(--primary);
+      font-weight: 700;
+    }
+
+    .detail-inline{
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+      font-size: .875rem;
+      color: #64748b;
+    }
+    .detail-inline ul{
+      margin: 4px 0 0;
+      padding-left: 20px;
+    }
+    .detail-inline li{
+      margin-bottom: 2px;
     }
 
     .row-card .engagement-preview{
@@ -1012,28 +992,24 @@
         tr.innerHTML = `
           <td style="display:block;">
             <div class="row-card state-${state}" data-idx="${idx}">
-              <div class="card-grid">
-                <div class="card-section">
-                  <div class="section-title">Référence</div>
-                  <span class="ref-badge">
-                    <span class="mini-state"></span>
-                    ${escapeHtml(ref)}
-                  </span>
-                  ${domaine ? `<span class="badge bg-light text-dark" style="font-weight:500; font-size:.75rem;">${escapeHtml(domaine)}</span>` : ''}
-                  <div class="d-flex align-items-center gap-2 mt-2" style="width:100%;">
-                    <span class="subtle">${stateLabelFr(state)}</span>
-                    <span class="badge bg-primary" style="font-size:.75rem;">${kpiCount} KPI</span>
-                  </div>
-                </div>
-                <div class="card-section">
-                  <div class="section-title">Engagement</div>
-                  <div class="engagement-text">${escapeHtml(engagement)}</div>
-                </div>
-                <div class="card-section">
-                  <div class="section-title">Détails</div>
-                  ${details.length ? `<ul class="detail-list">${details.map(d => `<li>${escapeHtml(d)}</li>`).join("")}</ul>` : '<span class="subtle">—</span>'}
-                </div>
+              <div class="card-header">
+                <span class="ref-badge">
+                  <span class="mini-state"></span>
+                  ${escapeHtml(ref)}
+                </span>
+                ${domaine ? `<span class="badge bg-light text-dark" style="font-weight:500;">${escapeHtml(domaine)}</span>` : ''}
+                <span class="subtle">${stateLabelFr(state)}</span>
+                <span class="badge bg-primary">${kpiCount} KPI</span>
               </div>
+              <div class="card-content">
+                <strong>Engagement:</strong> ${escapeHtml(engagement)}
+              </div>
+              ${details.length ? `
+                <div class="detail-inline">
+                  <strong>Détails:</strong>
+                  <ul>${details.map(d => `<li>${escapeHtml(d)}</li>`).join("")}</ul>
+                </div>
+              ` : ''}
             </div>
           </td>
         `;
