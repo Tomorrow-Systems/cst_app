@@ -53,10 +53,14 @@
     body{
       background: var(--bg-solid);
       background-image: var(--bg);
-      background-attachment: fixed;
       color: var(--text);
       font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
       min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    @media (min-width: 769px){
+      body{ background-attachment: fixed; }
     }
 
     /* Header bar */
@@ -228,9 +232,19 @@
       background: var(--card);
       border: none;
       border-radius: 20px;
-      box-shadow: var(--shadow-lg);
+      box-shadow: var(--shadow);
       padding: 24px;
       margin-bottom: 20px;
+    }
+    @media (min-width: 769px){
+      .topbar{ box-shadow: var(--shadow-lg); }
+    }
+    @media (max-width: 576px){
+      .topbar{
+        padding: 16px;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,.08);
+      }
     }
 
     .stats-grid{
@@ -245,25 +259,25 @@
       .stats-grid{ grid-template-columns: 1fr; }
     }
     .stat{
-      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      background: #f8fafc;
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 18px 20px;
-      transition: transform .2s ease, box-shadow .2s ease;
       position: relative;
       overflow: hidden;
+      border-left: 4px solid var(--primary);
     }
-    .stat::before{
-      content: '';
-      position: absolute;
-      top: 0; left: 0;
-      width: 4px; height: 100%;
-      background: var(--primary);
-      border-radius: 4px 0 0 4px;
+    @media (min-width: 769px){
+      .stat{
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        transition: transform .2s ease, box-shadow .2s ease;
+      }
     }
-    .stat:hover{
-      transform: translateY(-2px);
-      box-shadow: var(--shadow);
+    @media (min-width: 769px){
+      .stat:hover{
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+      }
     }
     .stat .label{
       color: var(--muted);
@@ -359,15 +373,19 @@
       background: var(--card);
       border: none;
       border-radius: 20px;
-      box-shadow: var(--shadow-lg);
+      box-shadow: var(--shadow);
       padding: 24px;
-      margin-bottom: 100px; /* Space for floating button */
+      margin-bottom: 100px;
+    }
+    @media (min-width: 769px){
+      .cards-container{ box-shadow: var(--shadow-lg); }
     }
     @media (max-width: 576px){
       .cards-container{
-        padding: 16px;
-        border-radius: 16px;
+        padding: 12px;
+        border-radius: 12px;
         margin-bottom: 80px;
+        box-shadow: 0 1px 3px rgba(0,0,0,.08);
       }
     }
 
@@ -375,6 +393,9 @@
       display: flex;
       flex-direction: column;
       gap: 16px;
+    }
+    @media (max-width: 576px){
+      .cards-list{ gap: 10px; }
     }
 
     /* Individual Card */
@@ -384,53 +405,58 @@
       padding: 20px;
       background: var(--state-none-bg);
       cursor: pointer;
-      transition: all .25s cubic-bezier(.4,0,.2,1);
       box-shadow: 0 1px 3px rgba(0,0,0,.05);
       position: relative;
       width: 100%;
-      height: auto; /* Auto height - no fixed heights */
-      overflow: visible; /* No internal scrolling */
+      height: auto;
+      overflow: visible;
+      will-change: transform;
+    }
+    @media (min-width: 769px){
+      .row-card{
+        transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+      }
+      .row-card:hover{
+        transform: translateY(-2px);
+        border-color: var(--primary-light);
+        box-shadow: 0 8px 24px rgba(79,70,229,.12);
+      }
     }
     @media (max-width: 576px){
       .row-card{
         padding: 16px;
         border-radius: 12px;
+        box-shadow: none;
       }
     }
-    .row-card::after{
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 16px;
-      opacity: 0;
-      transition: opacity .25s ease;
-      pointer-events: none;
-      box-shadow: 0 20px 40px rgba(79,70,229,.15);
+    .row-card.state-none{ background: #fff; border-color: var(--state-none-br); }
+    .row-card.state-partial{ background: #eff6ff; border-color: var(--state-partial-br); }
+    .row-card.state-done{ background: #ecfdf5; border-color: var(--state-done-br); }
+    @media (min-width: 769px){
+      .row-card.state-partial{ background: var(--state-partial-bg); }
+      .row-card.state-done{ background: var(--state-done-bg); }
     }
-    .row-card:hover{
-      transform: translateY(-2px);
-      border-color: var(--primary-light);
-    }
-    .row-card:hover::after{
-      opacity: 1;
-    }
-    .row-card.state-none{ background: var(--state-none-bg); border-color: var(--state-none-br); }
-    .row-card.state-partial{ background: var(--state-partial-bg); border-color: var(--state-partial-br); }
-    .row-card.state-done{ background: var(--state-done-bg); border-color: var(--state-done-br); }
 
     .ref-badge{
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       font-weight: 700;
-      padding: 8px 14px;
+      padding: 6px 12px;
       border-radius: 999px;
-      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      background: #f1f5f9;
       border: 1px solid var(--pill-br);
       color: var(--text);
       white-space: nowrap;
-      font-size: .9rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,.05);
+      font-size: .85rem;
+    }
+    @media (min-width: 769px){
+      .ref-badge{
+        padding: 8px 14px;
+        font-size: .9rem;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        box-shadow: 0 2px 4px rgba(0,0,0,.05);
+      }
     }
 
     .mini-state{
@@ -1809,14 +1835,21 @@
 
     // ---------- Scroll to Top ----------
     const btnScrollTop = document.getElementById("btnScrollTop");
+    let scrollTicking = false;
 
     window.addEventListener("scroll", () => {
-      if(window.scrollY > 300){
-        btnScrollTop.classList.add("visible");
-      } else {
-        btnScrollTop.classList.remove("visible");
+      if(!scrollTicking){
+        requestAnimationFrame(() => {
+          if(window.scrollY > 300){
+            btnScrollTop.classList.add("visible");
+          } else {
+            btnScrollTop.classList.remove("visible");
+          }
+          scrollTicking = false;
+        });
+        scrollTicking = true;
       }
-    });
+    }, { passive: true });
 
     btnScrollTop.addEventListener("click", () => {
       window.scrollTo({ top: 0, behavior: "smooth" });
