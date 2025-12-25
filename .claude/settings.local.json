@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nInitial commit: CST Engagements & KPI Tracker\n\n- Add index.html \\(main application for GitHub Pages\\)\n- Add README.md with usage documentation\n- Add PRD.md with product requirements\n- Add sample-data.json with example engagements\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git branch:*)",
+      "Bash(git push:*)",
+      "Bash(git fetch:*)",
+      "Bash(git rebase:*)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd CST data preload button\n\n- Add \"Charger données CST\" button to load CST_KPI.json\n- Include CST_KPI.json data file with engagement data\n- Fix btnLoadDemo reference to use new btnLoadCST\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git commit:*)"
+    ]
+  }
+}

@@ -848,7 +848,6 @@
           <span class="action-label"><i class="bi bi-file-earmark-excel me-1"></i>Importer sélections</span>
           <div class="action-buttons">
             <input id="excelImportInput" class="form-control form-control-sm" type="file" accept=".xlsx,.xls" title="Importer depuis Excel">
-            <button id="btnImportExcel" class="btn btn-sm btn-warning"><i class="bi bi-upload me-1"></i>Importer</button>
           </div>
         </div>
       </div>
@@ -1065,7 +1064,6 @@
       btnLoadCST: document.getElementById("btnLoadCST"),
       btnExportExcelSelections: document.getElementById("btnExportExcelSelections"),
       excelImportInput: document.getElementById("excelImportInput"),
-      btnImportExcel: document.getElementById("btnImportExcel"),
       emptyState: document.getElementById("emptyState"),
       cardsList: document.getElementById("cardsList"),
       search: document.getElementById("searchInput"),
@@ -1735,16 +1733,7 @@
 
     els.btnExportExcelSelections.addEventListener("click", exportExcelSelections);
 
-    // Excel import event listeners
-    els.btnImportExcel.addEventListener("click", () => {
-      if(els.excelImportInput.files && els.excelImportInput.files[0]){
-        importExcelSelections(els.excelImportInput.files[0]);
-        els.excelImportInput.value = ""; // Reset input
-      } else {
-        alert("Veuillez sélectionner un fichier Excel (.xlsx) à importer.");
-      }
-    });
-
+    // Excel import event listener
     els.excelImportInput.addEventListener("change", (e) => {
       if(e.target.files && e.target.files[0]){
         // Auto-import when file is selected
