@@ -684,6 +684,9 @@
         <div class="upload-compact">
           <input id="fileInput" class="form-control form-control-sm" type="file" accept=".json,application/json" style="background: rgba(255,255,255,.9);">
           <button id="btnLoadCST" class="btn btn-sm btn-light"><i class="bi bi-cloud-download me-1"></i>Charger données CST</button>
+          <div class="vr mx-1 d-none d-md-block" style="height: 24px; opacity: 0.3;"></div>
+          <input id="excelImportInput" class="form-control form-control-sm" type="file" accept=".xlsx,.xls" style="background: rgba(255,255,255,.9); max-width: 200px;" title="Importer les sélections depuis Excel">
+          <button id="btnImportExcel" class="btn btn-sm btn-warning"><i class="bi bi-upload me-1"></i>Importer Excel</button>
         </div>
       </div>
     </div>
@@ -789,6 +792,8 @@
       fileInput: document.getElementById("fileInput"),
       btnLoadCST: document.getElementById("btnLoadCST"),
       btnExportExcelSelections: document.getElementById("btnExportExcelSelections"),
+      excelImportInput: document.getElementById("excelImportInput"),
+      btnImportExcel: document.getElementById("btnImportExcel"),
       emptyState: document.getElementById("emptyState"),
       cardsList: document.getElementById("cardsList"),
       search: document.getElementById("searchInput"),
@@ -1011,6 +1016,105 @@
 
       const ts = new Date().toISOString().slice(0,19).replaceAll(":","-");
       XLSX.writeFile(wb, `export_kpi_selections_${ts}.xlsx`);
+    }
+
+    // ---------- Excel import ----------
+    function importExcelSelections(file){
+      const reader = new FileReader();
+
+      reader.onload = function(e){
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+
+          // Get first sheet
+          const sheetName = workbook.SheetNames[0];
+          if(!sheetName){
+            alert("Le fichier Excel est vide.");
+            return;
+          }
+
+          const worksheet = workbook.Sheets[sheetName];
+          const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+          if(!jsonData.length){
+            alert("Aucune donnée trouvée dans le fichier Excel.");
+            return;
+          }
+
+          // Validate columns exist
+          const firstRow = jsonData[0];
+          const requiredCols = ['kpi_id', 'selection_confiance', 'selection_importance'];
+          const missingCols = requiredCols.filter(col => !(col in firstRow));
+
+          if(missingCols.length > 0){
+            alert(`Colonnes manquantes dans le fichier Excel: ${missingCols.join(', ')}\n\nAssurez-vous d'utiliser un fichier exporté depuis cette application.`);
+            return;
+          }
+
+          // Import selections
+          let importedCount = 0;
+          let skippedCount = 0;
+
+          jsonData.forEach(row => {
+            const kpiId = String(row.kpi_id ?? "").trim();
+            const confiance = String(row.selection_confiance ?? "").trim();
+            const importance = String(row.selection_importance ?? "").trim();
+
+            if(!kpiId){
+              skippedCount++;
+              return;
+            }
+
+            // Only import if at least one selection is present
+            if(confiance || importance){
+              if(!actions.kpi[kpiId]){
+                actions.kpi[kpiId] = {};
+              }
+
+              if(confiance){
+                actions.kpi[kpiId].confidence = confiance;
+              }
+              if(importance){
+                actions.kpi[kpiId].importance = importance;
+              }
+              actions.kpi[kpiId].updatedAt = row.selection_updatedAt || new Date().toISOString();
+
+              importedCount++;
+            } else {
+              skippedCount++;
+            }
+          });
+
+          // Save to localStorage
+          saveActions();
+
+          // Refresh UI
+          renderTable();
+          refreshStats();
+
+          // Update KPI panel if open
+          if(currentEngagementIndex !== null){
+            const canvasEl = document.getElementById("kpiCanvas");
+            const off = bootstrap.Offcanvas.getInstance(canvasEl);
+            if(off && off._isShown){
+              renderKpis(window.data ? window.data[currentEngagementIndex] : null);
+            }
+          }
+
+          alert(`Import terminé!\n\n✅ ${importedCount} sélections importées\n⏭️ ${skippedCount} lignes ignorées (vides ou sans sélection)`);
+
+        } catch(err){
+          console.error("Erreur lors de l'import Excel:", err);
+          alert("Erreur lors de la lecture du fichier Excel.\n\nVérifiez que le fichier est valide et qu'il a été exporté depuis cette application.");
+        }
+      };
+
+      reader.onerror = function(){
+        alert("Erreur lors de la lecture du fichier.");
+      };
+
+      reader.readAsArrayBuffer(file);
     }
 
     // ---------- Render ----------
@@ -1358,6 +1462,24 @@
     });
 
     els.btnExportExcelSelections.addEventListener("click", exportExcelSelections);
+
+    // Excel import event listeners
+    els.btnImportExcel.addEventListener("click", () => {
+      if(els.excelImportInput.files && els.excelImportInput.files[0]){
+        importExcelSelections(els.excelImportInput.files[0]);
+        els.excelImportInput.value = ""; // Reset input
+      } else {
+        alert("Veuillez sélectionner un fichier Excel (.xlsx) à importer.");
+      }
+    });
+
+    els.excelImportInput.addEventListener("change", (e) => {
+      if(e.target.files && e.target.files[0]){
+        // Auto-import when file is selected
+        importExcelSelections(e.target.files[0]);
+        e.target.value = ""; // Reset input
+      }
+    });
 
     // ---------- Utils ----------
     function escapeHtml(str){
