@@ -808,6 +808,55 @@
         font-size: 1.2rem;
       }
     }
+
+    /* Scroll to Top Button */
+    .btn-scroll-top{
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      z-index: 1000;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      border: none;
+      border-radius: 50%;
+      box-shadow: 0 4px 14px rgba(79,70,229,.4);
+      cursor: pointer;
+      transition: all .25s cubic-bezier(.4,0,.2,1);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(20px);
+    }
+    .btn-scroll-top.visible{
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    .btn-scroll-top:hover{
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(79,70,229,.5);
+    }
+    .btn-scroll-top:active{
+      transform: translateY(-1px) scale(0.95);
+    }
+    .btn-scroll-top i{
+      font-size: 1.3rem;
+    }
+    @media (max-width: 576px){
+      .btn-scroll-top{
+        bottom: 70px;
+        left: 16px;
+        width: 44px;
+        height: 44px;
+      }
+      .btn-scroll-top i{
+        font-size: 1.2rem;
+      }
+    }
   </style>
 </head>
 
@@ -925,6 +974,11 @@
   <button id="btnExportExcelSelections" class="fab-export">
     <i class="bi bi-file-earmark-excel"></i>
     <span>Exporter Excel</span>
+  </button>
+
+  <!-- Scroll to Top Button -->
+  <button id="btnScrollTop" class="btn-scroll-top" title="Retour en haut">
+    <i class="bi bi-arrow-up"></i>
   </button>
 
   <!-- Offcanvas KPI -->
@@ -1752,6 +1806,21 @@
         .replaceAll("'","&#039;");
     }
     function escapeAttr(str){ return escapeHtml(str); }
+
+    // ---------- Scroll to Top ----------
+    const btnScrollTop = document.getElementById("btnScrollTop");
+
+    window.addEventListener("scroll", () => {
+      if(window.scrollY > 300){
+        btnScrollTop.classList.add("visible");
+      } else {
+        btnScrollTop.classList.remove("visible");
+      }
+    });
+
+    btnScrollTop.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
 
     // Initial
     renderTable();
